@@ -4,20 +4,30 @@ project("optlib" VERSION 0.0.1
   DESCRIPTION "A header-only c++ library that provides algoritms for gradient optimization of single value function."
   HOMEPAGE_URL "https://github.com/borodziejciesla/optlib")
 
+set(TEST_PROJECT_NAME ${PROJECT_NAME}_tests)
+
 include(GNUInstallDirs)
 
 add_library(${PROJECT_NAME} INTERFACE)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+option(BUILD_TESTS "Build tests" ON)
+
+add_subdirectory(eigen)
 
 target_include_directories(${PROJECT_NAME}
   INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/io>
+    $<TARGET_PROPERTY:eigen,INTERFACE_INCLUDE_DIRECTORIES>
 )
 
-target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_20)
+# target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_20)
 
-# enable_testing()
-# add_subdirectory(test)
+
+
 
 # locations are provided by GNUInstallDirs
 install(
@@ -56,4 +66,15 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION include)
 
 set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE")
 
-include(CPack)
+# include(CPack)
+
+###############################################
+################ Unit Tests ###################
+###############################################
+if(BUILD_TESTS)    
+    project(${TEST_PROJECT_NAME})
+
+    add_subdirectory(tests)    
+    enable_testing()
+    add_test(${TEST_PROJECT_NAME} ${TEST_PROJECT_NAME})    
+endif() #   BUILD_TESTS

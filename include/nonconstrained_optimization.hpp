@@ -15,8 +15,9 @@ namespace optlib {
 
       ~NonconstrainedOptimizer(void) = default;
 
-      optlib_io::OptimizationOutput Run(const optlib_io::OptimizedFunction::StateVector & initial_argument) {
-        //
+      optlib_io::OptimizationOutput<size, T> Run(const optlib_io::OptimizedFunction<size, T>::StateVector & initial_argument) {
+        auto f = optlib_io::OptimizationOutput<size, T>{};
+        return f;
       }
   };
 } //  namespace optlib

@@ -8,7 +8,7 @@ namespace optlib_io {
   class OptimizedFunction {
     public:
       OptimizedFunction(void) = default;
-      virtual ~OptimizedFunction(void);
+      virtual ~OptimizedFunction(void) {}
 
       using StateVector = Eigen::Vector<T, size>;
       using StateMatrix = Eigen::Matrix<T, size, size>;

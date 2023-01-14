@@ -1,6 +1,8 @@
 #include "gtest/gtest.h"
 
-#include "nonconstrained_optimization.hpp"
+#include <memory>
+
+#include "linesearch.hpp"
 
 class QuadraticForm : public optlib_io::OptimizedFunction<2, double> {
   public:
@@ -26,14 +28,25 @@ class QuadraticForm : public optlib_io::OptimizedFunction<2, double> {
 };
 
 
-class UnconstrainedQuadraticFormTests : public ::testing::Test
+/* Test */
+class LineseatchTests : public ::testing::Test
 {
   protected:
     void SetUp(void) override
     {}
 };
 
-TEST_F(UnconstrainedQuadraticFormTests, GaussSeidlTest)
+TEST_F(LineseatchTests, SimpleTest)
 {
-    EXPECT_TRUE(true);
+    Eigen::Vector<double, 2> initial_point;
+    initial_point << 1.0, 1.0; 
+    Eigen::Vector<double, 2> search_direction;
+    search_direction << -1.0, -1.0;
+    auto qf = std::make_shared<QuadraticForm>();
+
+    const auto initial_value = qf->FunctionValue(initial_point);
+
+    const auto [point, value] = optlib::Linesearch<2, double>(initial_point, search_direction, qf);
+
+    EXPECT_TRUE(initial_value > value);
 }

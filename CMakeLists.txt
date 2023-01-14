@@ -20,6 +20,7 @@ add_subdirectory(eigen)
 target_include_directories(${PROJECT_NAME}
   INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/core>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/io>
     $<TARGET_PROPERTY:eigen,INTERFACE_INCLUDE_DIRECTORIES>
 )

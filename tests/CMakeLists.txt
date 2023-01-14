@@ -16,6 +16,7 @@ FetchContent_MakeAvailable(googletest)
 # Tests
 ################################
 add_executable(${TEST_PROJECT_NAME}
+  linesearch_test.cpp
   unconstrained_test.cpp
 )
 

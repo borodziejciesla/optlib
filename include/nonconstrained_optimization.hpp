@@ -5,6 +5,8 @@
 #include "optimization_output.hpp"
 #include "optimization_type.hpp"
 
+#include "base_unconstrained_optimization.hpp"
+
 namespace optlib {
   template <unsigned int size, typename T = float>
   class NonconstrainedOptimizer {

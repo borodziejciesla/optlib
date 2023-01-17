@@ -3,6 +3,7 @@
 
 #include "optimized_function.hpp"
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <memory>
@@ -31,15 +32,16 @@ namespace optlib {
     
     // Iteration
     points.at(2)  = {multiplier, cost_function->FunctionValue(initial_point + search_direction * multiplier)};
+    auto alpha = multiplier;
 
     auto counter = 0u;
     while((counter < maximum_iterations_number) && check_condition(points)) {
-      multiplier *= multiplier;
+      alpha *= multiplier;
       counter++;
 
       points.at(0) = points.at(1);
       points.at(1) = points.at(2);
-      points.at(2)  = {multiplier, cost_function->FunctionValue(initial_point + search_direction * multiplier)};
+      points.at(2)  = {alpha, cost_function->FunctionValue(initial_point + search_direction * alpha)};
     };
   };
 
@@ -97,23 +99,35 @@ namespace optlib {
     const auto current_value = cost_function->FunctionValue(initial_point);
     const auto first_step_value = cost_function->FunctionValue(initial_point + search_direction);
 
+    points.at(0) = {T(0), current_value};
+    points.at(1) = {step_length, first_step_value};
+
     // Decide if make Expansion or Contraction
-    if (current_value >= first_step_value) {
+    if (current_value >= first_step_value)
       Expansion<size, T>(initial_point, search_direction, cost_function, points, alpha);
-    } else {
+    else
       Contraction<size, T>(initial_point, search_direction, cost_function, points, T(1.0) / alpha);
-    }
+
+    // Find best option in points
+    const auto min_point = std::min_element(points.begin(), points.end(),
+      [](const PointWithValue<T> & a, const PointWithValue<T> & b) { return  a.value < b.value; }
+    );
 
     // Estimation
-    const auto  estimated_optimum_step = EstimateLineseaerchMinimum<T>(points);
+    const auto estimated_optimum_step = EstimateLineseaerchMinimum<T>(points);
+    
+    // Check if in range
+    if (estimated_optimum_step > points.at(2).value) {
+      return std::make_pair((initial_point + search_direction * points.at(2).alpha), points.at(2).value);
+    } else {
+      // Check if really best point
+      const auto estimated_step_value = cost_function->FunctionValue(initial_point + search_direction * estimated_optimum_step);
 
-    // Check if really best point
-    const auto estimated_step_value = cost_function->FunctionValue(initial_point + search_direction * estimated_optimum_step);
-
-    if (points.at(0).value < estimated_step_value)
-      return std::make_pair((initial_point + search_direction * points.at(0).alpha), points.at(0).value);
-    else
-      return std::make_pair((initial_point + search_direction * estimated_step_value), estimated_step_value);
+      if (min_point->value < estimated_step_value)
+        return std::make_pair((initial_point + search_direction * min_point->alpha), min_point->value);
+      else
+        return std::make_pair((initial_point + search_direction * estimated_step_value), estimated_step_value);
+    }
   };
 } //  namespace optlib
 

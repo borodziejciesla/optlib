@@ -126,7 +126,7 @@ namespace optlib {
       if (min_point->value < estimated_step_value)
         return std::make_pair((initial_point + search_direction * min_point->alpha), min_point->value);
       else
-        return std::make_pair((initial_point + search_direction * estimated_step_value), estimated_step_value);
+        return std::make_pair((initial_point + search_direction * estimated_optimum_step), estimated_step_value);
     }
   };
 } //  namespace optlib

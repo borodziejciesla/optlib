@@ -8,7 +8,8 @@
 namespace optlib_io {
   enum class OptimizationType {
     GradientDescent = 0,
-    GaussSeidl = 1
+    GaussSeidl = 1,
+    NewtonRapson = 3
   };
 } //  namespace optlib_io
 

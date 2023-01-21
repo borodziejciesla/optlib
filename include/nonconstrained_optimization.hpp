@@ -8,6 +8,7 @@
 #include "optimization_type.hpp"
 
 #include "gradient_descent_algorithm.hpp"
+#include "newton_rapson_algorithm.hpp"
 
 namespace optlib {
   template <unsigned int size, typename T, typename OptimizedFunctionClass>
@@ -19,16 +20,19 @@ namespace optlib {
             optimizer_ = std::make_shared<GradientDescentAlgorithm<size, T, OptimizedFunctionClass>>(optimization_type);
             break;
           }
+          case optlib_io::OptimizationType::NewtonRapson: {
+            optimizer_ = std::make_shared<NewtonRapsonAlgorithm<size, T, OptimizedFunctionClass>>(optimization_type);
+            break;
+          }
         }
       }
 
       ~NonconstrainedOptimizer(void) = default;
 
       optlib_io::OptimizationOutput<size, T> Run(const optlib_io::OptimizedFunction<size, T>::StateVector & initial_argument) {
-        optimizer_->Run(initial_argument);
+        const auto output = optimizer_->Run(initial_argument);
         
-        auto f = optlib_io::OptimizationOutput<size, T>{};
-        return f;
+        return output;
       }
 
     private:

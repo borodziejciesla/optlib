@@ -1,5 +1,5 @@
-#ifndef OPTLIB_INCLUDE_CORE_GRADIENT_DESCENT_ALGORITHM_HPP_
-#define OPTLIB_INCLUDE_CORE_GRADIENT_DESCENT_ALGORITHM_HPP_
+#ifndef OPTLIB_INCLUDE_CORE_NEWTON_RAPSON_ALGORITHM_HPP_
+#define OPTLIB_INCLUDE_CORE_NEWTON_RAPSON_ALGORITHM_HPP_
 
 #include <memory>
 #include <tuple>
@@ -9,17 +9,17 @@
 
 namespace optlib {
   template <unsigned int size, typename T, typename OptimizedFunctionClass>
-  class GradientDescentAlgorithm : public BaseUnconstrainedOptimizer<size, T, OptimizedFunctionClass> {
+  class NewtonRapsonAlgorithm : public BaseUnconstrainedOptimizer<size, T, OptimizedFunctionClass> {
     public:
-      explicit GradientDescentAlgorithm(const optlib_io::OptimizationType optimization_type)
+      explicit NewtonRapsonAlgorithm(const optlib_io::OptimizationType optimization_type)
         : BaseUnconstrainedOptimizer<size, T, OptimizedFunctionClass>(optimization_type)
         , optimized_function2_{std::make_shared<OptimizedFunctionClass>()} {}
 
-      virtual ~GradientDescentAlgorithm(void) {}
+      virtual ~NewtonRapsonAlgorithm(void) {}
 
     protected:
       optlib_io::OptimizedFunction<size, T>::StateVector FindMinimzationDirection(const optlib_io::OptimizedFunction<size, T>::StateVector & start_point) {
-        const auto search_direction = -optimized_function2_->FunctionGradient(start_point);
+        const auto search_direction = -optimized_function2_->FunctionHessian(start_point).inverse() * optimized_function2_->FunctionGradient(start_point);
         return static_cast<optlib_io::OptimizedFunction<size, T>::StateVector>(search_direction);
       }
 
@@ -34,4 +34,4 @@ namespace optlib {
   };
 } //  namespace optlib
 
-#endif  //  OPTLIB_INCLUDE_CORE_GRADIENT_DESCENT_ALGORITHM_HPP_
+#endif  //  OPTLIB_INCLUDE_CORE_NEWTON_RAPSON_ALGORITHM_HPP_

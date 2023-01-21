@@ -26,6 +26,7 @@ namespace optlib {
         do {
           const auto best_on_direction = Iteration(iteration_start_point);
           iteration_start_point = best_on_direction;
+          current_best_point_ = iteration_start_point;
           best_value = optimized_function_->FunctionValue(iteration_start_point);
         } while (IsStopCondition());
 
@@ -55,10 +56,12 @@ namespace optlib {
       }
 
       bool IsStopCondition(void) const {
-        return iteration_index_ > 10u;;
+        return (iteration_index_ < 100u) 
+          && (optimized_function_->FunctionGradient(current_best_point_).norm() > 0.0001);
       }
 
       size_t iteration_index_ = 0u;
+      optlib_io::OptimizedFunction<size, T>::StateVector current_best_point_;
       optlib_io::OptimizationOutput<size, T> output_;
   };
 } //  namespace optlib

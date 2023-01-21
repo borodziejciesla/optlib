@@ -63,6 +63,9 @@ class Rosenbrock : public optlib_io::OptimizedFunction<2, double> {
       const auto h_yy = 2.0 * b_;
 
       StateMatrix hessian;
+      hessian << h_xx, h_xy, h_yx, h_yy;
+
+      return hessian;
     }
 
   private:
@@ -152,6 +155,7 @@ INSTANTIATE_TEST_CASE_P(
   UnconstrainedOptimizerTestsOptions,
   UnconstrainedOptimizerTest,
   ::testing::Values(
-    optlib_io::OptimizationType::GradientDescent
+    optlib_io::OptimizationType::GradientDescent,
+    optlib_io::OptimizationType::NewtonRapson
   )
 );

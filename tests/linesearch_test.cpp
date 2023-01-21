@@ -16,7 +16,7 @@ class QuadraticForm : public optlib_io::OptimizedFunction<2, double> {
       return value(0);
     }
 
-    StateVector FunctionJacobian(const optlib_io::OptimizedFunction<2, double>::StateVector & argument) {
+    StateVector FunctionGradient(const optlib_io::OptimizedFunction<2, double>::StateVector & argument) {
       return argument;
     }
 
@@ -39,7 +39,7 @@ class SquareSquare : public optlib_io::OptimizedFunction<2, double> {
       return value;
     }
 
-    StateVector FunctionJacobian(const optlib_io::OptimizedFunction<2, double>::StateVector & argument) {
+    StateVector FunctionGradient(const optlib_io::OptimizedFunction<2, double>::StateVector & argument) {
       return argument;
     }
 

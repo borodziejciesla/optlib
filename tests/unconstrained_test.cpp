@@ -1,7 +1,10 @@
 #include "gtest/gtest.h"
 
+#include <cmath>
+
 #include "nonconstrained_optimization.hpp"
 
+/* Quadratic form */
 class QuadraticForm : public optlib_io::OptimizedFunction<2, double> {
   public:
     QuadraticForm(void) {
@@ -13,8 +16,8 @@ class QuadraticForm : public optlib_io::OptimizedFunction<2, double> {
       return value(0);
     }
 
-    StateVector FunctionJacobian(const optlib_io::OptimizedFunction<2, double>::StateVector & argument) {
-      return argument;
+    StateVector FunctionGradient(const optlib_io::OptimizedFunction<2, double>::StateVector & argument) {
+      return static_cast<StateVector>(qf_ * argument);
     }
 
     optlib_io::OptimizedFunction<2, double>::StateMatrix FunctionHessian(const optlib_io::OptimizedFunction<2, double>::StateVector & argument) {
@@ -22,18 +25,133 @@ class QuadraticForm : public optlib_io::OptimizedFunction<2, double> {
     }
 
   private:
-    optlib_io::OptimizedFunction<2, double>::StateMatrix qf_;;
+    optlib_io::OptimizedFunction<2, double>::StateMatrix qf_;
+};
+
+/* ROsenbrock function */
+class Rosenbrock : public optlib_io::OptimizedFunction<2, double> {
+  public:
+    Rosenbrock(void) { }
+
+    double FunctionValue(const StateVector & argument) {
+      const auto x = argument(0);
+      const auto y = argument(1);
+
+      return std::pow(a_ - x, 2) + b_ * std::pow(y - x, 2);
+    }
+
+    StateVector FunctionGradient(const optlib_io::OptimizedFunction<2, double>::StateVector & argument) {
+      const auto x = argument(0);
+      const auto y = argument(1);
+
+      const auto grad_x = -2.0 * (a_ - x) - 2.0 * b_ * (y - x);
+      const auto grad_y = 2.0 * b_ * (y - x);
+
+      StateVector grad;
+      grad << grad_x , grad_y; 
+      
+      return grad;
+    }
+
+    optlib_io::OptimizedFunction<2, double>::StateMatrix FunctionHessian(const optlib_io::OptimizedFunction<2, double>::StateVector & argument) {
+      const auto x = argument(0);
+      const auto y = argument(1);
+
+      const auto h_xx = 2.0 * (1.0 + b_);
+      const auto h_xy = -2.0 * b_;
+      const auto h_yx = -2.0 * b_;
+      const auto h_yy = 2.0 * b_;
+
+      StateMatrix hessian;
+    }
+
+  private:
+    const double a_ = 1.0;
+    const double b_ = 100.0;
 };
 
 
-class UnconstrainedQuadraticFormTests : public ::testing::Test
+/******************* Tests *******************/
+class UnconstrainedOptimizerTest : public ::testing::TestWithParam<optlib_io::OptimizationType>
 {
   protected:
     void SetUp(void) override
     {}
+
+    QuadraticForm qf_;
 };
 
-TEST_F(UnconstrainedQuadraticFormTests, GaussSeidlTest)
+TEST_P(UnconstrainedOptimizerTest, SimpleQuadraticTest)
 {
-    EXPECT_TRUE(true);
+  const auto optimizer_type = GetParam();
+
+  optlib_io::OptimizedFunction<2, double>::StateVector x0;
+  x0 << 25.0, 34.0;
+
+  optlib::NonconstrainedOptimizer<2, double, QuadraticForm> optimizer(optimizer_type);
+
+  const auto output = optimizer.Run(x0);
+
+  EXPECT_TRUE(output.optimized_function_value < qf_.FunctionValue(x0));
+  EXPECT_TRUE(output.optimized_argument.norm() < 0.01);
 }
+
+TEST_P(UnconstrainedOptimizerTest, SimpleQuadraticTest2)
+{
+  const auto optimizer_type = GetParam();
+
+  optlib_io::OptimizedFunction<2, double>::StateVector x0;
+  x0 << 34.0, -534.0;
+
+  optlib::NonconstrainedOptimizer<2, double, QuadraticForm> optimizer(optimizer_type);
+
+  const auto output = optimizer.Run(x0);
+
+  EXPECT_TRUE(output.optimized_function_value < qf_.FunctionValue(x0));
+  EXPECT_TRUE(output.optimized_argument.norm() < 0.01);
+}
+
+// TEST_P(UnconstrainedOptimizerTest, SimpleRosenbrockTest)
+// {
+//   const auto optimizer_type = GetParam();
+
+//   optlib_io::OptimizedFunction<2, double>::StateVector x0;
+//   x0 << 0.0, 0.0;
+
+//   optlib_io::OptimizedFunction<2, double>::StateVector x_opt;
+//   x_opt << 1.0, 1.0;
+
+//   optlib::NonconstrainedOptimizer<2, double, Rosenbrock> optimizer(optimizer_type);
+
+//   const auto output = optimizer.Run(x0);
+
+//   EXPECT_TRUE(output.optimized_function_value < qf_.FunctionValue(x0));
+//   EXPECT_TRUE((output.optimized_argument - x_opt).norm() < 0.01);
+// }
+
+// TEST_P(UnconstrainedOptimizerTest, SSimpleRosenbrockTest2)
+// {
+//   const auto optimizer_type = GetParam();
+
+//   optlib_io::OptimizedFunction<2, double>::StateVector x0;
+//   x0 << 2.0, 2.0;
+
+//   optlib_io::OptimizedFunction<2, double>::StateVector x_opt;
+//   x_opt << 1.0, 1.0;
+
+//   optlib::NonconstrainedOptimizer<2, double, Rosenbrock> optimizer(optimizer_type);
+
+//   const auto output = optimizer.Run(x0);
+
+//   EXPECT_TRUE(output.optimized_function_value < qf_.FunctionValue(x0));
+//   EXPECT_TRUE((output.optimized_argument - x_opt).norm() < 0.01);
+// }
+
+
+INSTANTIATE_TEST_CASE_P(
+  UnconstrainedOptimizerTestsOptions,
+  UnconstrainedOptimizerTest,
+  ::testing::Values(
+    optlib_io::OptimizationType::GradientDescent
+  )
+);

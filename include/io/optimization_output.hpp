@@ -5,7 +5,7 @@
 
 namespace optlib_io {
   template <unsigned int size, typename T = float>
-  class OptimizationOutput {
+  struct OptimizationOutput {
     Eigen::Vector<T, size> optimized_argument;
     T optimized_function_value = T(0);
   };

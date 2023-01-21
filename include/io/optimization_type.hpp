@@ -7,7 +7,8 @@
 
 namespace optlib_io {
   enum class OptimizationType {
-    GaussSeidl = 0
+    GradientDescent = 0,
+    GaussSeidl = 1
   };
 } //  namespace optlib_io
 

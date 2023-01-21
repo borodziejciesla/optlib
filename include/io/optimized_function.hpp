@@ -14,7 +14,7 @@ namespace optlib_io {
       using StateMatrix = Eigen::Matrix<T, size, size>;
 
       virtual T FunctionValue(const StateVector & argument) = 0;
-      virtual StateVector FunctionJacobian(const StateVector & argument) = 0;
+      virtual StateVector FunctionGradient(const StateVector & argument) = 0;
       virtual StateMatrix FunctionHessian(const StateVector & argument) = 0;
   };
 } //  namespace optlib_io

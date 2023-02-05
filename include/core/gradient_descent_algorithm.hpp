@@ -18,12 +18,12 @@ namespace optlib {
       virtual ~GradientDescentAlgorithm(void) {}
 
     protected:
-      optlib_io::OptimizedFunction<size, T>::StateVector FindMinimzationDirection(const optlib_io::OptimizedFunction<size, T>::StateVector & start_point) {
+      optlib_io::StateVector<size, T> FindMinimzationDirection(const optlib_io::StateVector<size, T> & start_point) {
         const auto search_direction = -optimized_function2_->FunctionGradient(start_point);
-        return static_cast<optlib_io::OptimizedFunction<size, T>::StateVector>(search_direction);
+        return static_cast<optlib_io::StateVector<size, T>>(search_direction);
       }
 
-      optlib_io::OptimizedFunction<size, T>::StateVector FindMinimumOnSearchDirection(const optlib_io::OptimizedFunction<size, T>::StateVector & start_point, const optlib_io::OptimizedFunction<size, T>::StateVector & search_direction) {
+      optlib_io::StateVector<size, T> FindMinimumOnSearchDirection(const optlib_io::StateVector<size, T> & start_point, const optlib_io::StateVector<size, T> & search_direction) {
         const auto [minimum_on_direction, value] = optlib::Linesearch<size, T>(start_point, search_direction, optimized_function2_);
         std::ignore = value;
 

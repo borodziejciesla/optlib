@@ -5,17 +5,20 @@
 
 namespace optlib_io {
   template <unsigned int size, typename T = float>
+  using StateVector = Eigen::Vector<T, size>;
+
+  template <unsigned int size, typename T = float>
+  using StateMatrix = Eigen::Matrix<T, size, size>;
+
+  template <unsigned int size, typename T = float>
   class OptimizedFunction {
     public:
       OptimizedFunction(void) = default;
       virtual ~OptimizedFunction(void) {}
 
-      using StateVector = Eigen::Vector<T, size>;
-      using StateMatrix = Eigen::Matrix<T, size, size>;
-
-      virtual T FunctionValue(const StateVector & argument) = 0;
-      virtual StateVector FunctionGradient(const StateVector & argument) = 0;
-      virtual StateMatrix FunctionHessian(const StateVector & argument) = 0;
+      virtual T FunctionValue(const StateVector<size, T> & argument) = 0;
+      virtual StateVector<size, T> FunctionGradient(const StateVector<size, T> & argument) = 0;
+      virtual StateMatrix<size, T> FunctionHessian(const StateVector<size, T> & argument) = 0;
   };
 } //  namespace optlib_io
 

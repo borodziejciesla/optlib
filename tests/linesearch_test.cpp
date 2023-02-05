@@ -11,21 +11,21 @@ class QuadraticForm : public optlib_io::OptimizedFunction<2, double> {
       qf_ << 1.0, 0.0, 0.0, 1.0;
     }
 
-    double FunctionValue(const StateVector & argument) {
+    double FunctionValue(const optlib_io::StateVector<2, double> & argument) {
       const auto value = argument.transpose() * qf_ * argument;
       return value(0);
     }
 
-    StateVector FunctionGradient(const optlib_io::OptimizedFunction<2, double>::StateVector & argument) {
+    optlib_io::StateVector<2, double> FunctionGradient(const optlib_io::StateVector<2, double> & argument) {
       return argument;
     }
 
-    optlib_io::OptimizedFunction<2, double>::StateMatrix FunctionHessian(const optlib_io::OptimizedFunction<2, double>::StateVector & argument) {
+    optlib_io::StateMatrix<2, double> FunctionHessian(const optlib_io::StateVector<2, double> & argument) {
       return qf_;
     }
 
   private:
-    optlib_io::OptimizedFunction<2, double>::StateMatrix qf_;;
+    optlib_io::StateMatrix<2, double> qf_;;
 };
 
 class SquareSquare : public optlib_io::OptimizedFunction<2, double> {
@@ -34,21 +34,21 @@ class SquareSquare : public optlib_io::OptimizedFunction<2, double> {
       qf_ << 1.0, 0.0, 0.0, 1.0;
     }
 
-    double FunctionValue(const StateVector & argument) {
+    double FunctionValue(const optlib_io::StateVector<2, double> & argument) {
       const auto value = std::pow(argument(0), 4) + std::pow(argument(1), 4);
       return value;
     }
 
-    StateVector FunctionGradient(const optlib_io::OptimizedFunction<2, double>::StateVector & argument) {
+    optlib_io::StateVector<2, double> FunctionGradient(const optlib_io::StateVector<2, double> & argument) {
       return argument;
     }
 
-    optlib_io::OptimizedFunction<2, double>::StateMatrix FunctionHessian(const optlib_io::OptimizedFunction<2, double>::StateVector & argument) {
+    optlib_io::StateMatrix<2, double> FunctionHessian(const optlib_io::StateVector<2, double> & argument) {
       return qf_;
     }
 
   private:
-    optlib_io::OptimizedFunction<2, double>::StateMatrix qf_;;
+    optlib_io::StateMatrix<2, double> qf_;;
 };
 
 /* Test */

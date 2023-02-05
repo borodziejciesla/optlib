@@ -15,7 +15,7 @@ namespace optlib {
 
       ~ConstrainedOptimizer(void) = default;
 
-      optlib_io::OptimizationOutput Run(const optlib_io::OptimizedFunction::StateVector & initial_argument) {
+      optlib_io::OptimizationOutput Run(const optlib_io::StateVector<T, size> & initial_argument) {
         //
       }
   };

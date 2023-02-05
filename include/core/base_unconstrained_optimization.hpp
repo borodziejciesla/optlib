@@ -18,7 +18,7 @@ namespace optlib {
 
       virtual ~BaseUnconstrainedOptimizer(void) {}
 
-      optlib_io::OptimizationOutput<size, T> Run(const optlib_io::OptimizedFunction<size, T>::StateVector & initial_argument) {
+      optlib_io::OptimizationOutput<size, T> Run(const optlib_io::StateVector<size, T> & initial_argument) {
         auto iteration_start_point = initial_argument;
         auto best_value = optimized_function_->FunctionValue(initial_argument);
 
@@ -38,13 +38,13 @@ namespace optlib {
       }
 
     protected:
-      virtual optlib_io::OptimizedFunction<size, T>::StateVector FindMinimzationDirection(const optlib_io::OptimizedFunction<size, T>::StateVector & start_point) = 0;
-      virtual optlib_io::OptimizedFunction<size, T>::StateVector FindMinimumOnSearchDirection(const optlib_io::OptimizedFunction<size, T>::StateVector & start_point, const optlib_io::OptimizedFunction<size, T>::StateVector & search_direction) = 0;
+      virtual optlib_io::StateVector<size, T> FindMinimzationDirection(const optlib_io::StateVector<size, T> & start_point) = 0;
+      virtual optlib_io::StateVector<size, T> FindMinimumOnSearchDirection(const optlib_io::StateVector<size, T> & start_point, const optlib_io::StateVector<size, T> & search_direction) = 0;
 
       std::shared_ptr<OptimizedFunctionClass> optimized_function_ = nullptr;
 
     private:
-      optlib_io::OptimizedFunction<size, T>::StateVector Iteration(const optlib_io::OptimizedFunction<size, T>::StateVector & start_point) {
+      optlib_io::StateVector<size, T> Iteration(const optlib_io::StateVector<size, T> & start_point) {
         // Increase iteration counter
         iteration_index_++;
 
@@ -61,7 +61,7 @@ namespace optlib {
       }
 
       size_t iteration_index_ = 0u;
-      optlib_io::OptimizedFunction<size, T>::StateVector current_best_point_;
+      optlib_io::StateVector<size, T> current_best_point_;
       optlib_io::OptimizationOutput<size, T> output_;
   };
 } //  namespace optlib

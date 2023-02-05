@@ -11,21 +11,21 @@ class QuadraticForm : public optlib_io::OptimizedFunction<2, double> {
       qf_ << 1.0, 0.0, 0.0, 1.0;
     }
 
-    double FunctionValue(const StateVector & argument) {
+    double FunctionValue(const optlib_io::StateVector<2, double> & argument) {
       const auto value = argument.transpose() * qf_ * argument;
       return value(0);
     }
 
-    StateVector FunctionGradient(const optlib_io::OptimizedFunction<2, double>::StateVector & argument) {
-      return static_cast<StateVector>(qf_ * argument);
+    optlib_io::StateVector<2, double> FunctionGradient(const optlib_io::StateVector<2, double> & argument) {
+      return static_cast<optlib_io::StateVector<2, double>>(qf_ * argument);
     }
 
-    optlib_io::OptimizedFunction<2, double>::StateMatrix FunctionHessian(const optlib_io::OptimizedFunction<2, double>::StateVector & argument) {
+    optlib_io::StateMatrix<2, double> FunctionHessian(const optlib_io::StateVector<2, double> & argument) {
       return qf_;
     }
 
   private:
-    optlib_io::OptimizedFunction<2, double>::StateMatrix qf_;
+    optlib_io::StateMatrix<2, double> qf_;
 };
 
 /* ROsenbrock function */
@@ -33,27 +33,27 @@ class Rosenbrock : public optlib_io::OptimizedFunction<2, double> {
   public:
     Rosenbrock(void) { }
 
-    double FunctionValue(const StateVector & argument) {
+    double FunctionValue(const optlib_io::StateVector<2, double> & argument) {
       const auto x = argument(0);
       const auto y = argument(1);
 
       return std::pow(a_ - x, 2) + b_ * std::pow(y - x, 2);
     }
 
-    StateVector FunctionGradient(const optlib_io::OptimizedFunction<2, double>::StateVector & argument) {
+    optlib_io::StateVector<2, double> FunctionGradient(const optlib_io::StateVector<2, double> & argument) {
       const auto x = argument(0);
       const auto y = argument(1);
 
       const auto grad_x = -2.0 * (a_ - x) - 2.0 * b_ * (y - x);
       const auto grad_y = 2.0 * b_ * (y - x);
 
-      StateVector grad;
+      optlib_io::StateVector<2, double> grad;
       grad << grad_x , grad_y; 
       
       return grad;
     }
 
-    optlib_io::OptimizedFunction<2, double>::StateMatrix FunctionHessian(const optlib_io::OptimizedFunction<2, double>::StateVector & argument) {
+    optlib_io::StateMatrix<2, double> FunctionHessian(const optlib_io::StateVector<2, double> & argument) {
       const auto x = argument(0);
       const auto y = argument(1);
 
@@ -62,7 +62,7 @@ class Rosenbrock : public optlib_io::OptimizedFunction<2, double> {
       const auto h_yx = -2.0 * b_;
       const auto h_yy = 2.0 * b_;
 
-      StateMatrix hessian;
+      optlib_io::StateMatrix<2, double> hessian;
       hessian << h_xx, h_xy, h_yx, h_yy;
 
       return hessian;
@@ -88,8 +88,8 @@ TEST_P(UnconstrainedOptimizerTest, SimpleQuadraticTest)
 {
   const auto optimizer_type = GetParam();
 
-  optlib_io::OptimizedFunction<2, double>::StateVector x0;
-  x0 << 25.0, 34.0;
+  optlib_io::StateVector<2, double> x0;
+  x0 << -25.0, -34.0;
 
   optlib::NonconstrainedOptimizer<2, double, QuadraticForm> optimizer(optimizer_type);
 
@@ -103,8 +103,8 @@ TEST_P(UnconstrainedOptimizerTest, SimpleQuadraticTest2)
 {
   const auto optimizer_type = GetParam();
 
-  optlib_io::OptimizedFunction<2, double>::StateVector x0;
-  x0 << 34.0, -534.0;
+  optlib_io::StateVector<2, double> x0;
+  x0 << -34.0, -534.0;
 
   optlib::NonconstrainedOptimizer<2, double, QuadraticForm> optimizer(optimizer_type);
 
@@ -156,6 +156,7 @@ INSTANTIATE_TEST_CASE_P(
   UnconstrainedOptimizerTest,
   ::testing::Values(
     optlib_io::OptimizationType::GradientDescent,
+    optlib_io::OptimizationType::GaussSeidl,
     optlib_io::OptimizationType::NewtonRapson
   )
 );
